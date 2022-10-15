@@ -1,5 +1,6 @@
 from flask import Flask, abort, send_file
 from flask_cors import CORS
+import image_ascii
 
 # import os
 # os.environ["BUCKET_URL"]
