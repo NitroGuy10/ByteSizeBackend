@@ -7,6 +7,8 @@ from botocore.config import Config
 import os
 import uuid
 
+import compress
+
 
 app = Flask(__name__)
 CORS(app)
@@ -45,13 +47,18 @@ def upload_and_process_video():
         bucket_text_location = f"{os.environ['bucketTextDirName']}/{uuid.uuid4()}.txt"
 
         # Do the thing
-        s3_client.download_file(os.environ["bucketName"], bucket_location, "downloaded.mp4")
+        downloaded_file_name = "downloaded.mp4"
+        s3_client.download_file(os.environ["bucketName"], bucket_location, downloaded_file_name)
+
+        compress.processVideo(downloaded_file_name)
 
         # Upload it to s3
-        s3_client.upload_file("art.txt", os.environ["bucketName"], bucket_text_location)
+        s3_client.upload_file("res.txt", os.environ["bucketName"], bucket_text_location)
 
         # Done
         return "bingus"
     else:
         abort(400)
 
+
+#s3_client.upload_file("rickroll.mp4", os.environ["bucketName"], "videos/rickroll.mp4")

@@ -52,20 +52,20 @@ def printMat(img):
       print(elem)
 
 def processVideo(filename):
-  res = open('res.txt', 'w')
-  #src = cv2.Mat(480, 640, cv2.CV_8UC4)
-  src = cv2.Mat(np.zeros((480, 640, 4), dtype='uint8'))
-  cap = cv2.VideoCapture(filename)
-  _, src = cap.read(src)
-  while(src is not None):
-    #src = cv2.imread('goldengate.jpg')
-    frame = resizeImg(src, 120);
-    frame = grayify(frame);
-    characters = asciify(frame);
-    res.write(characters)
+  with open('res.txt', 'w') as res:
+    #src = cv2.Mat(480, 640, cv2.CV_8UC4)
+    src = cv2.Mat(np.zeros((480, 640, 4), dtype='uint8'))
+    cap = cv2.VideoCapture(filename)
     _, src = cap.read(src)
-    time.sleep(0.015)
+    while(src is not None):
+      #src = cv2.imread('goldengate.jpg')
+      frame = resizeImg(src, 120);
+      frame = grayify(frame);
+      characters = asciify(frame);
+      res.write(characters)
+      _, src = cap.read(src)
+      time.sleep(0.015)
 
-
-processVideo("testvid.mp4")
+if __name__ == "__main__":
+  processVideo("testvid.mp4")
 
