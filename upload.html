@@ -20,8 +20,8 @@
             const bucketLink = document.getElementById("text").value;
             console.log(bucketLink);
 
-            axios.post('/localhost:5000/', {
-                bucketLink: bucketLink
+            axios.post('/process_video', {
+                bucketVideoKey: bucketLink
               })
               .then(function (response) {
                 console.log(response);
