@@ -1,3 +1,4 @@
+import shutil
 from flask import Flask, abort, send_file, request
 from flask_cors import CORS
 
@@ -8,6 +9,9 @@ import os
 import uuid
 
 import compress
+import sys
+sys.path.insert(0, "ByteSizeML")
+import inference
 
 
 app = Flask(__name__)
@@ -44,7 +48,9 @@ def upload_and_process_video():
         # Read the request
         request_data = request.get_json()
         bucket_location = request_data["bucketVideoKey"]
-        bucket_text_location = f"{os.environ['bucketTextDirName']}/{uuid.uuid4()}.txt"
+        video_uuid = uuid.uuid4()
+        bucket_text_location = f"{os.environ['bucketTextDirName']}/{video_uuid}.txt"
+        bucket_reconstructed_video_location = f"{os.environ['bucketVideoDirName']}/{video_uuid}.mp4"
 
         # Do the thing
         downloaded_file_name = "downloaded.mp4"
@@ -52,13 +58,34 @@ def upload_and_process_video():
 
         compress.processVideo(downloaded_file_name)
 
-        # Upload it to s3
-        s3_client.upload_file("res.txt", os.environ["bucketName"], bucket_text_location)
+        # Upload the text to s3
+        exported_text_file_name = "res.txt"
+        s3_client.upload_file(exported_text_file_name, os.environ["bucketName"], bucket_text_location)
 
-        # Done
-        return "bingus"
+        # Now prepare for ML on the text
+        exported_ml_text_file_name = "figure/res2.txt"
+        if os.path.exists(exported_ml_text_file_name):
+            os.remove(exported_ml_text_file_name)
+        shutil.copy(exported_text_file_name, exported_ml_text_file_name)
+
+        # Do the ML
+        inference.real_main("res2")
+
+        # Upload the reconstructed video to s3
+        reconstructed_video_path = "figure/videos/video_res2.mp4"
+        s3_client.upload_file(reconstructed_video_path, os.environ["bucketName"], bucket_reconstructed_video_location)
+
+
+        # Done, now send a response
+        return_dict = {
+            "bucketTextLocation": bucket_text_location,
+            "bucketReconstructedVideoLocation": bucket_reconstructed_video_location
+        }
+        print(return_dict)
+        return return_dict
     else:
         abort(400)
+
 
 
 #s3_client.upload_file("rickroll.mp4", os.environ["bucketName"], "videos/rickroll.mp4")

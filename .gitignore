@@ -134,3 +134,5 @@ dmypy.json
 *.mov
 .DS_Store
 ByteSizeML/
+results/
+figure/

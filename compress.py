@@ -5,6 +5,7 @@ import math
 
 height = 480
 width = 640
+print_characters = False
 #chars = [".", ",", ":", ";", "+", "*", "?", "%", "S", "#", "@"]
 chars = [' ', '`','^','"',',',':',';','I','l','!','i','~','+','_','-','?',']',
         '[','}','{','1',')','(','|','/','t','f','j','r','x','n','u','v','c','z',
@@ -41,7 +42,8 @@ def asciify(img):
     characters += characterLine
     characterLine = ""
 
-  print(characters)
+  if print_characters:
+    print(characters)
   return characters
 
 
