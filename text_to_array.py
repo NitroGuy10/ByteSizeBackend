@@ -11,7 +11,7 @@ def text_file_to_array(filename):
             line = line.strip()
             char_num = 0
             for character in line:
-                character_value = BRIGHTNESS_CHARS.index(character) / len(BRIGHTNESS_CHARS)
+                character_value = BRIGHTNESS_CHARS.index(character) / (len(BRIGHTNESS_CHARS) - 1)
                 array[line_num][char_num] = [character_value, character_value, character_value]
                 char_num += 1
             line_num += 1
