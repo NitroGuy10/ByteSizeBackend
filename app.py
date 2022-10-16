@@ -12,6 +12,7 @@ import compress
 import sys
 sys.path.insert(0, "ByteSizeML")
 import inference
+import inferenceColor
 
 
 app = Flask(__name__)
@@ -73,6 +74,35 @@ def text_to_video():
 
         # Do the ML
         inference.real_main("res2")
+
+        # Upload the reconstructed video to s3
+        reconstructed_video_path = "figure/videos/video_res2.mp4"
+        s3_client.upload_file(reconstructed_video_path, os.environ["bucketName"], bucket_reconstructed_video_location)
+
+        # Done, now send a response
+        return_dict = {
+            "bucketReconstructedVideoLocation": bucket_reconstructed_video_location
+        }
+        print(return_dict)
+        return return_dict
+    else:
+        abort(400)
+
+@app.route("/text_to_video_color", methods=["POST"])
+def text_to_video_color():
+    if request.method == "POST":
+        # Read the request
+        request_data = request.get_json()
+        bucket_location = request_data["bucketTextKey"]
+        video_uuid = uuid.uuid4()
+        bucket_reconstructed_video_location = f"{os.environ['bucketVideoDirName']}/{video_uuid}.mp4"
+
+        # Prepare for ML on the text
+        downloaded_file_name = "figure/res2.txt"
+        s3_client.download_file(os.environ["bucketName"], bucket_location, downloaded_file_name)        
+
+        # Do the ML
+        inferenceColor.real_main("res2")
 
         # Upload the reconstructed video to s3
         reconstructed_video_path = "figure/videos/video_res2.mp4"
