@@ -12,16 +12,23 @@
     <h1>ByteSize</h1>
     <p>Bucket Link</p>
     <textarea id="text"></textarea>
-    <button onclick="upload()">Process</button>
-
+    <button onclick="upload(false)">Video To Text</button>
+    <button onclick="upload(true)">Text To Video</button>
     <script>
-        function upload ()
+        function upload (text_to_video)
         {
             const bucketLink = document.getElementById("text").value;
             console.log(bucketLink);
 
-            axios.post('/process_video', {
-                bucketVideoKey: bucketLink
+            let url = "/video_to_text"
+            if (text_to_video)
+            {
+              url = "/text_to_video"
+            }
+
+            axios.post(url, {
+                bucketVideoKey: bucketLink,
+                bucketTextKey: bucketLink
               })
               .then(function (response) {
                 console.log(response);
